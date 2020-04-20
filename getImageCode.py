@@ -39,16 +39,18 @@ def main():
     # repo = r"/suite/repository/workspace/courses/4275/12316/"
 
     print("Enter local image directory to scan: ")
-    cwd = Path(input("Input: "))
-    # cwd = Path(r"D:\Edison\_NewDevelopment\2020\Math PSSA Prep\CE\images\assessment_pool_images")
+    imgDir = Path(input("Input: "))
+    # imgDir = Path(r"D:\Edison\_NewDevelopment\2020\Math PSSA Prep\CE\images\assessment_pool_images")
+
+    currDir = os.getcwd()
 
     altTag = False
     if(input("Would you like manually alt-tag all of the images right now? (answer: y/n): ")=="y"):
         altTag = True
 
-    parent = str(cwd.parent)
-    dir = str(os.path.basename(cwd))
-    imgCode = parent+"\\"+dir+"\html_image_code.html"
+    parent = str(imgDir.parent)
+    dir = str(os.path.basename(imgDir))
+    imgCode = currDir+"\html_image_code.html"
 
     """write the code to the file"""
     with open(imgCode, "w+") as file:
