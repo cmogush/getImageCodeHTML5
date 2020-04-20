@@ -6,30 +6,54 @@ def getImageTag(repo, image, height, width, alt):
     return "&lt;img src=\""+repo+image+"\" height=\""+height+"\" width=\""+width+"\" alt=\""+alt+"\" /&gt;"
 
 def getLocalTag(dir, image, height, width):
-    return "<img src=\""+ dir + "\\" + image + "\" height=\"" + height + "\" width=\"" + width + "\" alt=\"\" align=\"right\"/>"
+    return "<img src=\""+ dir + "\\" + image + "\" height=\"" + height + "\" width=\"" + width + "\" alt=\"\"/>"
 
-def writeImageCode(parent, currDir, file, repo, altTag):
+def writeImageCode(parent, currDir, file, repo, altTag, rename):
+    evenOdd = 0
     dir = parent+"\\"+currDir
     repo = repo+currDir+"/"
-    file.write("<hr/><p>"+str(currDir)+"</p>")
+    file.write("<hr/><p><h1>"+str(currDir)+"</h1></p>")
     file.write("<table border-collapse: collapse; border: 1px solid transparent; cellpadding=\"5\" cellspacing=\"1\">\n")
     for f in os.listdir(dir):
         if os.path.isdir(dir+"\\"+f):
-            writeImageCode(dir, f, file, repo, altTag)
+            writeImageCode(dir, f, file, repo, altTag, rename)
         splitPath = (os.path.splitext(f))
         if not splitPath[1] == ".png" and not splitPath[1] == ".jpg":  # only get png and jpgs
             continue
+
         img = Image.open(dir + "/" + f)
-        if altTag:
+        if altTag or rename:
             img.show()
-            print("Enter alt text for image"+f)
-            alt = input("alt=")
+            alt = splitPath[0]
+            print("Current image name: "+splitPath[0])
+        if rename:
+            print("Enter new name for image below (or leave blank to keep current)")
+            newName = input("New name: ")
+            if not newName == "":
+                os.rename(dir+"\\"+f,dir+"\\"+newName+splitPath[1])
+                f = newName + splitPath[1]
+                alt = newName
+        if altTag:
+            print("Suggested Alt-text: "+alt)
+            print("Enter Alt-text below (or leave blank to keep suggestion)")
+            newAlt = input("alt=")
+            if not newAlt == "":
+                alt = newAlt
+
         else:
             alt = ""
         width, height = img.size
         imgTag = getImageTag(repo, f, str(height), str(width), str(alt))
         localTag = getLocalTag(dir, f, str(height), str(width))
-        file.write("<tr><td>"+localTag+"</td><td>"+str(imgTag)+"</td></tr>")
+
+        if evenOdd == 0:
+            bgcolor = "#d1feff"
+            evenOdd = 1
+        else:
+            bgcolor = "white"
+            evenOdd = 0
+
+        file.write("<tr bgcolor=\""+bgcolor+"\"><td>"+localTag+"</td><td>"+str(imgTag)+"</td></tr>")
     file.write("</table>")
 
 def main():
@@ -45,17 +69,21 @@ def main():
     currDir = os.getcwd()
 
     altTag = False
+    rename = False
+    if (input("Would you like manually rename all of the images right now? (answer: y/n): ") == "y"):
+        rename = True
     if(input("Would you like manually alt-tag all of the images right now? (answer: y/n): ")=="y"):
         altTag = True
 
     parent = str(imgDir.parent)
     dir = str(os.path.basename(imgDir))
-    imgCode = currDir+"\html_image_code.html"
+    imgCode = parent+"\\"+dir+"\html_image_code.html"
+    print(imgCode)
 
     """write the code to the file"""
     with open(imgCode, "w+") as file:
         file.write("<html>\n<body>\n")
-        writeImageCode(parent, dir, file, repo, altTag)
+        writeImageCode(parent, dir, file, repo, altTag, rename)
         file.write("</body>\n</html>")
 
 if __name__ == "__main__":
