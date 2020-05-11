@@ -2,8 +2,9 @@ import os
 from PIL import Image
 from pathlib import Path
 
-def getImageTag(repo, image, height, width, alt):
-    return "&lt;img src=\""+repo+image+"\" height=\""+height+"\" width=\""+width+"\" alt=\""+alt+"\" /&gt;"
+def getImageTag(repo, image, height, width, align, alt):
+    #'&lt' used instead of '<' as it will be displaying the tag as text
+    return "&lt;img src=\""+repo+image+"\" height=\""+height+"\" width=\""+width+"\" align=\""+align+"\" alt=\""+alt+"\" /&gt;"
 
 def getLocalTag(dir, image, height, width):
     return "<img src=\""+ dir + "\\" + image + "\" height=\"" + height + "\" width=\"" + width + "\" alt=\"\"/>"
@@ -42,8 +43,15 @@ def writeImageCode(parent, currDir, file, repo, altTag, rename):
 
         else:
             alt = ""
+
+        fraction = input("Type 'y' if image is a fraction (and should be aligned center), else leave blank")
+        align = ""
+
+        if fraction == 'y':
+            align = "center"
+
         width, height = img.size
-        imgTag = getImageTag(repo, f, str(height), str(width), str(alt))
+        imgTag = getImageTag(repo, f, str(height), str(width), str(align), str(alt))
         localTag = getLocalTag(dir, f, str(height), str(width))
 
         if evenOdd == 0:
