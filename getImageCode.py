@@ -13,21 +13,27 @@ def getLocalTag(dir, image, height, width):
 
 
 def writeImageCode(parent, currDir, file, repo, altTag, rename, alignFractions):
-    evenOdd = 0
-    align = "" #set intial alignment
-    dir = parent + "\\" + currDir #get directory
-    repo = repo + currDir + "/" #set repo directory
+    """function to write the image tags to the output html file"""
+    # initial setup
+    evenOdd = 0  # used for assigning every other row a different color
+    align = ""  # set intial alignment
+    dir = parent + "\\" + currDir  # get directory
+    repo = repo + currDir + "/"  # set repo directory
     file.write("<hr/><p><h1>" + str(currDir) + "</h1></p>\n")
-    file.write("<table border-collapse: collapse; border: 1px solid transparent; cellpadding=\"5\" cellspacing=\"1\">\n")
+    file.write(
+        "<table border-collapse: collapse; border: 1px solid transparent; cellpadding=\"5\" cellspacing=\"1\">\n")
+
+    # iterate over the files in the directory
     for f in os.listdir(dir):
-        if os.path.isdir(dir + "\\" + f): #if f is a directory
-            writeImageCode(dir, f, file, repo, altTag, rename) #iterate over that directory (f)
+        if os.path.isdir(dir + "\\" + f):  # if f is a directory
+            writeImageCode(dir, f, file, repo, altTag, rename)  # iterate over that directory (f)
         splitPath = (os.path.splitext(f))
         if not splitPath[1] == ".png" and not splitPath[1] == ".jpg":  # only get png and jpgs
             continue
 
-        jsID = splitPath[0] #set ID for javascript function from filename
+        jsID = splitPath[0]  # set ID from filename, for javascript function
 
+        # implement alt-tagging / renaming / alignment
         img = Image.open(dir + "/" + f)
         if altTag or rename or alignFractions:
             img.show()
@@ -50,14 +56,14 @@ def writeImageCode(parent, currDir, file, repo, altTag, rename, alignFractions):
                 alt = newAlt
         if alignFractions:
             if (input("Type 'y' if image is a fraction (and should be aligned center), else leave blank: ") == 'y'):
-                align = "center"
+                align = "style=\"vertical-align: middle\""
             else:
                 align = ""
 
         else:
             alt = ""
 
-        """setup variables/attributes"""
+        # setup variables/attributes, final preparation before writing
         width, height = img.size
         imgTag = getImageTag(repo, f, str(height), str(width), str(align), str(alt))
         localTag = getLocalTag(dir, f, str(height), str(width))
@@ -70,7 +76,7 @@ def writeImageCode(parent, currDir, file, repo, altTag, rename, alignFractions):
             bgcolor = "white"
             evenOdd = 0
 
-        """write everything"""
+        # write the image
         file.write("<tr bgcolor=\"" + bgcolor + "\">\n<td>" + localTag + "</td>\n")
         file.write("<!-- The button used to copy the text -->\n")
         file.write("<td>" + button + "</td>\n")
