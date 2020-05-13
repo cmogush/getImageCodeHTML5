@@ -19,7 +19,7 @@ def writeHeader(file):
 
 def getImageTag(repo, image, height, width, align, alt):
     # '&lt' used instead of '<' as it will be displaying the tag as text
-    return "&lt;img src=\"" + repo + image + "\" height=\"" + height + "\" width=\"" + width + "\" align=\"" + align + "\" alt=\"" + alt + "\" /&gt;"
+    return "&lt;img src=\"" + repo + image + "\" height=\"" + height + "\" width=\"" + width + "\"" + align + " alt=\"" + alt + "\" /&gt;"
 
 
 def getLocalTag(dir, image, height, width):
@@ -69,7 +69,7 @@ def writeImageCode(parent, currDir, file, repo, altTag, rename, alignFractions):
             if not newAlt == "":
                 alt = newAlt
         if alignFractions:
-            if (input("Type 'y' if image is a fraction (and should be aligned center), else leave blank: ") == 'y'):
+            if input("Is image a math equation and/or should be in-line with text? ('y' for yes, else leave blank): ") == 'y':
                 align = "style=\"vertical-align: middle\""
             else:
                 align = ""
@@ -84,10 +84,10 @@ def writeImageCode(parent, currDir, file, repo, altTag, rename, alignFractions):
         button = "<button onclick=\"copyTheText(my" + jsID + ".id)\">Copy</button>"
 
         if evenOdd == 0:
-            bgcolor = "#d1feff"
+            bgcolor = "#dbe0ff"
             evenOdd = 1
         else:
-            bgcolor = "white"
+            bgcolor = ""
             evenOdd = 0
 
         # write the image
@@ -114,12 +114,9 @@ def main():
     altTag = False
     rename = False
     alignFractions = False
-    if (input("Would you like manually rename all of the images right now? (answer: y/n): ") == "y"):
-        rename = True
-    if (input("Would you like manually alt-tag all of the images right now? (answer: y/n): ") == "y"):
-        altTag = True
-    if (input("Would you like center all fractions (to be in-line with text) right now? (answer: y/n): ") == "y"):
-        alignFractions = True
+    if "y" == input("Rename images? ('y' for yes, else leave blank): "): rename = True
+    if "y" == input("Alt-tag images? ('y' for yes, else leave blank): "): altTag = True
+    if "y" == input("Center math equations? ('y' for yes, else leave blank): "): alignFractions = True
 
     # Setup the variables from the user input
     parent = str(imgDir.parent)
