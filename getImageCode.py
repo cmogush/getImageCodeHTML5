@@ -3,6 +3,20 @@ from PIL import Image
 from pathlib import Path
 
 
+def writeHeader(file):
+    """setup the header with the javascript function for copying text"""
+    file.write("<html>\n<head>\n<script>\n")
+    file.write("function copyTheText(id) {\n")
+    file.write("/* Get the text field */\n")
+    file.write("var copyText = document.getElementById(id);\n")
+    file.write("/* Select the text field */\n")
+    file.write("copyText.select();\n")
+    file.write("/* Copy the text inside the text field */\n")
+    file.write("document.execCommand(\"copy\");\n")
+    file.write("/* Alert the copied text */\n")
+    file.write("alert(\"Copied to clipboard: \" + copyText.value);}\n")
+    file.write("</script>\n</head>\n<body>\n")
+
 def getImageTag(repo, image, height, width, align, alt):
     # '&lt' used instead of '<' as it will be displaying the tag as text
     return "&lt;img src=\"" + repo + image + "\" height=\"" + height + "\" width=\"" + width + "\" align=\"" + align + "\" alt=\"" + alt + "\" /&gt;"
@@ -85,18 +99,17 @@ def writeImageCode(parent, currDir, file, repo, altTag, rename, alignFractions):
         file.write(str(imgTag) + "</textarea></td></tr>\n")
     file.write("</table>\n")
 
-
 def main():
-    print("Enter eSchoolware Repository (without quotes), e.g:")
-    print("/suite/repository/workspace/courses/4275/12316/")
-    repo = input("Input: ")
-    # repo = r"/suite/repository/workspace/courses/4275/12316/"
+    #Copyright
+    print('GetImageCode v1.04 - (c) 2020 Christopher Mogush ')
+    print('-------------------------------------------------')
+    # Get input from User
+    print('Enter relative destination repository (without quotes)')
+    print('e.g: /suite/repository/workspace/courses/4275/12316/')
+    repo = input('Input: ')
 
-    print("Enter local image directory to scan: ")
+    print("Enter local image directory to scan")
     imgDir = Path(input("Input: "))
-    # imgDir = Path(r"D:\Edison\_NewDevelopment\2020\Math PSSA Prep\CE\images\assessment_pool_images")
-
-    currDir = os.getcwd()
 
     altTag = False
     rename = False
@@ -108,32 +121,19 @@ def main():
     if (input("Would you like center all fractions (to be in-line with text) right now? (answer: y/n): ") == "y"):
         alignFractions = True
 
+    # Setup the variables from the user input
     parent = str(imgDir.parent)
     dir = str(os.path.basename(imgDir))
     imgCode = parent + "\\" + dir + "\html_image_code.html"
-    print(imgCode)
 
-    """write the code to the file"""
-    with open(imgCode, "w+") as file:
-        """setup the header with the javascript function for copying text"""
-        file.write("<html>\n<head>\n<script>\n")
-        file.write("function copyTheText(id) {\n")
-        file.write("/* Get the text field */\n")
-        file.write("var copyText = document.getElementById(id);\n")
-        file.write("/* Select the text field */\n")
-        file.write("copyText.select();\n")
-        file.write("/* Copy the text inside the text field */\n")
-        file.write("document.execCommand(\"copy\");\n")
-        file.write("/* Alert the copied text */\n")
-        file.write("alert(\"Copied to clipboard: \" + copyText.value);}\n")
-        file.write("</script>\n</head>\n<body>\n")
-
-        """write the body"""
-        writeImageCode(parent, dir, file, repo, altTag, rename, alignFractions)
-
-        """close the html page"""
-        file.write("</body>\n</html>")
-
+    # write the code to the file
+    try:
+        with open(imgCode, "w+") as file:
+            writeHeader(file) # header
+            writeImageCode(parent, dir, file, repo, altTag, rename, alignFractions) # body
+            file.write("</body>\n</html>") # closing tags
+    except:
+        print("Not a valid directory")
 
 if __name__ == "__main__":
     main()
