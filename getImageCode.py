@@ -70,7 +70,7 @@ def writeImageCode(parent, currDir, file, repo, altTag, rename, alignFractions):
                 alt = newAlt
         if alignFractions:
             if input("Is image a math equation and/or should be in-line with text? ('y' for yes, else leave blank): ") == 'y':
-                align = "style=\"vertical-align: middle\""
+                align = " style=\"vertical-align: middle\""
             else:
                 align = ""
 
